@@ -4,8 +4,11 @@ import { FaPlus, FaMinus, FaTrash } from "react-icons/fa";
 
 import { useMemo } from "react";
 
+import { Button } from "@chakra-ui/react";
+
 const Index = () => {
   const toast = useToast();
+  const [newLocation, setNewLocation] = useState("");
 
   const [inventory, setInventory] = useState({ "Room 101": [], "Room 102": [], Lobby: [], Restaurant: [], Gym: [], Pool: [], Spa: [], "Conference Room": [], "Executive Suite": [] });
   const [newItem, setNewItem] = useState({ name: "", location: "", quantity: 0 });
@@ -66,14 +69,54 @@ const Index = () => {
     });
   };
 
+  const handleAddLocation = () => {
+    if (!newLocation) {
+      toast({
+        title: "Error",
+        description: "Please enter a location name before adding.",
+        status: "error",
+        duration: 3000,
+        isClosable: true,
+      });
+      return;
+    }
+    if (inventory.hasOwnProperty(newLocation)) {
+      toast({
+        title: "Error",
+        description: "This location already exists.",
+        status: "error",
+        duration: 3000,
+        isClosable: true,
+      });
+      return;
+    }
+    setInventory((prevInventory) => ({
+      ...prevInventory,
+      [newLocation]: [],
+    }));
+    setNewLocation("");
+  };
+
   return (
     <Container maxW="container.xl" py={10}>
+      {}
       <VStack spacing={6}>
         <Heading>Hotel Supplies Inventory Tracker</Heading>
         <Box w="100%">
           <HStack mb={4}>
             <Input placeholder="Item Name" value={newItem.name} onChange={(e) => setNewItem({ ...newItem, name: e.target.value })} />
+            <HStack mb={4}>
+              <Input placeholder="New Location" value={newLocation} onChange={(e) => setNewLocation(e.target.value)} />
+              <Button colorScheme="blue" onClick={handleAddLocation}>
+                Add Location
+              </Button>
+            </HStack>
             <Select placeholder="Select location" value={newItem.location} onChange={(e) => setNewItem({ ...newItem, location: e.target.value })}>
+              {Object.keys(inventory).map((location) => (
+                <option key={location} value={location}>
+                  {location}
+                </option>
+              ))}
               <option value="Room 101">Room 101</option>
               <option value="Room 102">Room 102</option>
               <option value="Lobby">Lobby</option>
