@@ -2,12 +2,23 @@ import React, { useState } from "react";
 import { Box, Container, Heading, VStack, HStack, Text, Table, Thead, Tbody, Tr, Th, Td, IconButton, Input, useToast } from "@chakra-ui/react";
 import { FaPlus, FaMinus, FaTrash } from "react-icons/fa";
 
+import { useMemo } from "react";
+
 const Index = () => {
   const toast = useToast();
-  const [inventory, setInventory] = useState([]);
+
+  const [inventory, setInventory] = useState({});
   const [newItem, setNewItem] = useState({ name: "", location: "", quantity: 0 });
 
+  // Function to get the count of a specific item in the selected location.
+  const getItemCountInLocation = (itemName, location) => {
+    if (!inventory[location]) return 0;
+    const item = inventory[location].find((item) => item.name === itemName);
+    return item ? item.quantity : 0;
+  };
+
   const handleAddItem = () => {
+    const { name, location, quantity } = newItem;
     if (!newItem.name || !newItem.location || newItem.quantity <= 0) {
       toast({
         title: "Error",
@@ -19,7 +30,21 @@ const Index = () => {
       return;
     }
 
-    setInventory([...inventory, newItem]);
+    // Update the inventory data structure to include the new item.
+    setInventory((prevInventory) => {
+      const locationInventory = prevInventory[location] || [];
+      const itemIndex = locationInventory.findIndex((item) => item.name === name);
+      let updatedLocationInventory;
+
+      if (itemIndex > -1) {
+        updatedLocationInventory = [...locationInventory];
+        updatedLocationInventory[itemIndex].quantity += quantity;
+      } else {
+        updatedLocationInventory = [...locationInventory, { name, quantity }];
+      }
+
+      return { ...prevInventory, [location]: updatedLocationInventory };
+    });
     setNewItem({ name: "", location: "", quantity: 0 });
   };
 
