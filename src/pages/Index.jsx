@@ -7,7 +7,7 @@ import { useMemo } from "react";
 const Index = () => {
   const toast = useToast();
 
-  const [inventory, setInventory] = useState({});
+  const [inventory, setInventory] = useState({ "Room 101": [], "Room 102": [], Lobby: [], Restaurant: [], Gym: [], Pool: [], Spa: [] });
   const [newItem, setNewItem] = useState({ name: "", location: "", quantity: 0 });
 
   // Function to get the count of a specific item in the selected location.
@@ -48,16 +48,22 @@ const Index = () => {
     setNewItem({ name: "", location: "", quantity: 0 });
   };
 
-  const updateQuantity = (index, delta) => {
-    const newInventory = [...inventory];
-    newInventory[index].quantity += delta;
-    setInventory(newInventory);
+  const updateQuantity = (location, itemName, delta) => {
+    setInventory((prevInventory) => {
+      const locationInventory = [...prevInventory[location]];
+      const itemIndex = locationInventory.findIndex((item) => item.name === itemName);
+      if (itemIndex > -1) {
+        locationInventory[itemIndex].quantity += delta;
+      }
+      return { ...prevInventory, [location]: locationInventory };
+    });
   };
 
-  const removeItem = (index) => {
-    const newInventory = [...inventory];
-    newInventory.splice(index, 1);
-    setInventory(newInventory);
+  const removeItem = (location, itemName) => {
+    setInventory((prevInventory) => {
+      const locationInventory = prevInventory[location].filter((item) => item.name !== itemName);
+      return { ...prevInventory, [location]: locationInventory };
+    });
   };
 
   return (
@@ -89,20 +95,22 @@ const Index = () => {
               </Tr>
             </Thead>
             <Tbody>
-              {inventory.map((item, index) => (
-                <Tr key={index}>
-                  <Td>{item.name}</Td>
-                  <Td>{item.location}</Td>
-                  <Td>{item.quantity}</Td>
-                  <Td>
-                    <HStack spacing={2}>
-                      <IconButton icon={<FaMinus />} onClick={() => updateQuantity(index, -1)} isDisabled={item.quantity <= 0} colorScheme="orange" aria-label="Decrease quantity" />
-                      <IconButton icon={<FaPlus />} onClick={() => updateQuantity(index, 1)} colorScheme="green" aria-label="Increase quantity" />
-                      <IconButton icon={<FaTrash />} onClick={() => removeItem(index)} colorScheme="red" aria-label="Remove item" />
-                    </HStack>
-                  </Td>
-                </Tr>
-              ))}
+              {Object.entries(inventory).map(([location, items]) =>
+                items.map((item, index) => (
+                  <Tr key={`${location}-${index}`}>
+                    <Td>{item.name}</Td>
+                    <Td>{location}</Td>
+                    <Td>{item.quantity}</Td>
+                    <Td>
+                      <HStack spacing={2}>
+                        <IconButton icon={<FaMinus />} onClick={() => updateQuantity(location, item.name, -1)} isDisabled={item.quantity <= 0} colorScheme="orange" aria-label="Decrease quantity" />
+                        <IconButton icon={<FaPlus />} onClick={() => updateQuantity(location, item.name, 1)} colorScheme="green" aria-label="Increase quantity" />
+                        <IconButton icon={<FaTrash />} onClick={() => removeItem(location, item.name)} colorScheme="red" aria-label="Remove item" />
+                      </HStack>
+                    </Td>
+                  </Tr>
+                )),
+              )}
               {inventory.length === 0 && (
                 <Tr>
                   <Td colSpan="4">
