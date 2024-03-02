@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Box, Container, Heading, VStack, HStack, Text, Table, Thead, Tbody, Tr, Th, Td, IconButton, Input, useToast } from "@chakra-ui/react";
+import { Box, Container, Heading, VStack, HStack, Text, Table, Thead, Tbody, Tr, Th, Td, IconButton, Input, Select, useToast } from "@chakra-ui/react";
 import { FaPlus, FaMinus, FaTrash } from "react-icons/fa";
 
 import { useMemo } from "react";
@@ -67,7 +67,15 @@ const Index = () => {
         <Box w="100%">
           <HStack mb={4}>
             <Input placeholder="Item Name" value={newItem.name} onChange={(e) => setNewItem({ ...newItem, name: e.target.value })} />
-            <Input placeholder="Location" value={newItem.location} onChange={(e) => setNewItem({ ...newItem, location: e.target.value })} />
+            <Select placeholder="Select location" value={newItem.location} onChange={(e) => setNewItem({ ...newItem, location: e.target.value })}>
+              <option value="Room 101">Room 101</option>
+              <option value="Room 102">Room 102</option>
+              <option value="Lobby">Lobby</option>
+              <option value="Restaurant">Restaurant</option>
+              <option value="Gym">Gym</option>
+              <option value="Pool">Pool</option>
+              <option value="Spa">Spa</option>
+            </Select>
             <Input placeholder="Quantity" type="number" value={newItem.quantity} onChange={(e) => setNewItem({ ...newItem, quantity: parseInt(e.target.value) || 0 })} />
             <IconButton icon={<FaPlus />} onClick={handleAddItem} colorScheme="green" aria-label="Add item" />
           </HStack>
