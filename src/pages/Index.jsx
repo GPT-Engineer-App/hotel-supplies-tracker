@@ -7,7 +7,7 @@ import { useMemo } from "react";
 const Index = () => {
   const toast = useToast();
 
-  const [inventory, setInventory] = useState({ "Room 101": [], "Room 102": [], Lobby: [], Restaurant: [], Gym: [], Pool: [], Spa: [] });
+  const [inventory, setInventory] = useState({ "Room 101": [], "Room 102": [], Lobby: [], Restaurant: [], Gym: [], Pool: [], Spa: [], "Conference Room": [], "Executive Suite": [] });
   const [newItem, setNewItem] = useState({ name: "", location: "", quantity: 0 });
 
   // Function to get the count of a specific item in the selected location.
@@ -81,6 +81,8 @@ const Index = () => {
               <option value="Gym">Gym</option>
               <option value="Pool">Pool</option>
               <option value="Spa">Spa</option>
+              <option value="Conference Room">Conference Room</option>
+              <option value="Executive Suite">Executive Suite</option>
             </Select>
             <Input placeholder="Quantity" type="number" value={newItem.quantity} onChange={(e) => setNewItem({ ...newItem, quantity: parseInt(e.target.value) || 0 })} />
             <IconButton icon={<FaPlus />} onClick={handleAddItem} colorScheme="green" aria-label="Add item" />
